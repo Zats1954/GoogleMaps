@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto">
+<group android:id="@+id/markers">
+    <item
+        android:id="@+id/createMarker"
+        android:title="@string/makePoint"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/editeMarker"
+        android:title="@string/editPoint"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/deleteMarker"
+        android:title="@string/deletePoint"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/showMarkers"
+        android:title="@string/showAllPoints"
+        app:showAsAction="never" />
+</group>
+</menu>

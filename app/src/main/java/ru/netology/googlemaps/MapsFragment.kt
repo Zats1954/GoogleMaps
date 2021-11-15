@@ -7,9 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
@@ -17,10 +15,14 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.coroutineScope
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.OnMapLoadedCallback
+import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.collections.MarkerManager
@@ -28,9 +30,15 @@ import com.google.maps.android.ktx.awaitAnimateCamera
 import com.google.maps.android.ktx.awaitMap
 import com.google.maps.android.ktx.model.cameraPosition
 import com.google.maps.android.ktx.utils.collection.addMarker
+import com.google.android.gms.maps.model.Marker
 
-class MapsFragment : Fragment() {
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.material.snackbar.Snackbar
+
+
+class MapsFragment : Fragment(), OnMapReadyCallback {
     private lateinit var googleMap: GoogleMap
+    lateinit var collection: MarkerManager.Collection
 
     @SuppressLint("MissingPermission")
     private val requestPermissionLauncher =
@@ -39,11 +47,14 @@ class MapsFragment : Fragment() {
                 googleMap.apply {
                     isMyLocationEnabled = true
                     uiSettings.isMyLocationButtonEnabled = true
+
                 }
             } else {
-                // TODO: show sorry dialog
+                Toast.makeText(requireContext(), "Требуется разрешение", Toast.LENGTH_SHORT).show()
             }
         }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,24 +87,26 @@ class MapsFragment : Fragment() {
                     googleMap.apply {
                         isMyLocationEnabled = true
                         uiSettings.isMyLocationButtonEnabled = true
+
                     }
 
-                    val fusedLocationProviderClient = LocationServices
-                        .getFusedLocationProviderClient(requireActivity())
+                    val fusedLocationProviderClient:FusedLocationProviderClient
+                    fusedLocationProviderClient = LocationServices
+                        .getFusedLocationProviderClient(this@MapsFragment.requireActivity())
+
                     fusedLocationProviderClient.lastLocation.addOnSuccessListener {
-                        println(it)
-                    }
+                        println(it) }
+
                 }
-                // 2. Должны показать обоснование необходимости прав
                 shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                    // TODO: show rationale dialog
+                    Toast.makeText(context, "Требуется разрешение", Toast.LENGTH_SHORT).show()
                 }
                 else -> {
                     requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                 }
             }
 
-            val target = LatLng(48.9981, 21.2758)
+            val target = LatLng(48.99813, 21.27585)
             googleMap.awaitAnimateCamera(
                 CameraUpdateFactory.newCameraPosition(
                     cameraPosition {
@@ -103,19 +116,18 @@ class MapsFragment : Fragment() {
                 ))
 
             val markerManager = MarkerManager(googleMap)
-            val collection: MarkerManager.Collection = markerManager.newCollection().apply {
+            collection = markerManager.newCollection().apply {
                 addMarker {
                     position(target)
-//                    icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_netology_48dp))
-                    icon(getDrawable(requireContext(), R.drawable.ic_netology_48dp)!!)
+                    getDrawable(requireContext(), R.drawable.ic_netology_48dp)?.let { icon(it) }
                     title("myPlace")
+                    draggable(true)
                 }.apply {
                     tag = "Any data here"
                 }
             }
-
             collection.setOnMarkerClickListener { marker ->
-                Toast.makeText(requireContext(), "Marker is Clicked", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Клик на точке", Toast.LENGTH_SHORT).show()
                 true
             }
         }
@@ -132,5 +144,51 @@ class MapsFragment : Fragment() {
         drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
         drawable.draw(canvas)
         icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+    }
+
+    fun addMarker(){
+        Toast.makeText(context, "Создание точки", Toast.LENGTH_SHORT).show()
+        setMapLongClick(googleMap)
+    }
+    fun editMarker(){
+        Toast.makeText(context, "Редактирование точки", Toast.LENGTH_SHORT).show()
+    }
+
+    @SuppressLint("PotentialBehaviorOverride")
+    fun deleteMarker(){
+        Toast.makeText(context, "Удаление точки", Toast.LENGTH_SHORT).show()
+        googleMap.setOnMarkerClickListener { marker ->
+            try{
+                marker.remove()
+            true}
+            catch(e:Exception) {
+                println("Can't delete marker $marker")
+                false}
+        }
+
+
+    }
+    fun showMarkers(){
+        Toast.makeText(context, "Просмотр всех точек", Toast.LENGTH_SHORT).show()
+        val builder = LatLngBounds.Builder()
+        for (m in collection.markers) {
+            builder.include(m.position)
+        }
+        val padding = 50
+        val bounds = builder.build()
+        val vision = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+        googleMap.setOnMapLoadedCallback({googleMap.moveCamera(vision)})
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        googleMap.setOnMapClickListener {latlng ->
+        collection.addMarker(MarkerOptions().position(latlng))
+        }
+    }
+
+    private fun setMapLongClick(map: GoogleMap){
+        map.setOnMapLongClickListener {latLng ->
+          collection.addMarker(MarkerOptions().position(latLng).title(latLng.toString()).draggable(true))
+        }
     }
 }
