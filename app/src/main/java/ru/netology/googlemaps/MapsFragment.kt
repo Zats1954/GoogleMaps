@@ -99,7 +99,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
                 }
                 shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                    Toast.makeText(context, "Требуется разрешение", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, R.string.warning, Toast.LENGTH_SHORT).show()
                 }
                 else -> {
                     requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -127,7 +127,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                 }
             }
             collection.setOnMarkerClickListener { marker ->
-                Toast.makeText(requireContext(), "Клик на точке", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.clickPoint, Toast.LENGTH_SHORT).show()
                 true
             }
         }
@@ -147,16 +147,16 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     }
 
     fun addMarker(){
-        Toast.makeText(context, "Создание точки", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context,  R.string.makePoint , Toast.LENGTH_SHORT).show()
         setMapLongClick(googleMap)
     }
     fun editMarker(){
-        Toast.makeText(context, "Редактирование точки", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, R.string.editPoint, Toast.LENGTH_SHORT).show()
     }
 
     @SuppressLint("PotentialBehaviorOverride")
     fun deleteMarker(){
-        Toast.makeText(context, "Удаление точки", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, R.string.deletePoint, Toast.LENGTH_SHORT).show()
         googleMap.setOnMarkerClickListener { marker ->
             try{
                 marker.remove()
@@ -169,7 +169,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
     }
     fun showMarkers(){
-        Toast.makeText(context, "Просмотр всех точек", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, R.string.showAllPoints, Toast.LENGTH_SHORT).show()
         val builder = LatLngBounds.Builder()
         for (m in collection.markers) {
             builder.include(m.position)

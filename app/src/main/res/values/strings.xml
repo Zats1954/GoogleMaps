@@ -1,7 +1,9 @@
 <resources>
-    <string name="app_name">GoogleMaps</string>
-    <string name="makePoint">Создание точки</string>
-    <string name="editPoint">Редактирование точки</string>
-    <string name="deletePoint">Удаление точки</string>
-    <string name="showAllPoints">Просмотр всех точек</string>
+    <string name="app_name" translatable="false">GoogleMaps</string>
+    <string name="makePoint">Make marker</string>
+    <string name="editPoint">Edit marker</string>
+    <string name="deletePoint">Delete marker</string>
+    <string name="showAllPoints">Show all markers</string>
+    <string name="warning">Need permission</string>
+    <string name="clickPoint">Click on marker</string>
 </resources>

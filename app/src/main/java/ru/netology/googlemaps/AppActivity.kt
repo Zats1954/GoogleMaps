@@ -32,7 +32,7 @@ class AppActivity : AppCompatActivity(R.layout.activity_main), OnMapReadyCallbac
                 fragment.addMarker()
                 true
             }
-            R.id.editeMarker -> {
+            R.id.editMarker -> {
                 fragment.editMarker()
                 true
             }

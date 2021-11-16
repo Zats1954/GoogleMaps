@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="makePoint">Создание точки</string>
+    <string name="editPoint">Редактирование точки</string>
+    <string name="deletePoint">Удаление точки</string>
+    <string name="showAllPoints">Просмотр всех точек</string>
+    <string name="warning">Требуется  разрешение</string>
+    <string name="clickPoint">Клик на точке</string>
+</resources>
