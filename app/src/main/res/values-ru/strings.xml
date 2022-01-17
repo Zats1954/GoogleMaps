@@ -6,4 +6,8 @@
     <string name="showAllPoints">Просмотр всех точек</string>
     <string name="warning">Требуется  разрешение</string>
     <string name="clickPoint">Клик на точке</string>
+    <string name="title">Title</string>
+    <string name="description_marker_avatar">Аватар маркера</string>
+    <string name="ltd">Ltd</string>
+    <string name="lng">Lng</string>
 </resources>

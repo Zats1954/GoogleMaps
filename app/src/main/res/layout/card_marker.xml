@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/common_spacing">
+
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="@dimen/marker_size"
+            android:layout_height="@dimen/marker_size"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="@dimen/common_spacing"
+            android:contentDescription="@string/description_marker_avatar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.078"
+            app:srcCompat="@raw/red_dot" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            app:layout_constraintBottom_toBottomOf="@+id/avatar"
+            app:layout_constraintStart_toEndOf="@id/avatar"
+            app:layout_constraintTop_toTopOf="@+id/avatar"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="@string/title" />
+
+        <TextView
+            android:id="@+id/tvLtd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="@string/ltd"
+            app:layout_constraintBottom_toBottomOf="@+id/latitude"
+            app:layout_constraintEnd_toStartOf="@+id/latitude"
+            app:layout_constraintTop_toTopOf="@+id/latitude" />
+
+        <TextView
+            android:id="@+id/latitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="@dimen/common_spacing"
+            app:layout_constraintEnd_toStartOf="@+id/tvLng"
+            app:layout_constraintStart_toStartOf="@id/avatar"
+            app:layout_constraintTop_toBottomOf="@+id/avatar"
+            app:layout_constraintVertical_bias="1.0"
+            tools:text="29.4" />
+
+        <TextView
+            android:id="@+id/tvLng"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="@string/lng"
+            app:layout_constraintBottom_toBottomOf="@+id/longitude"
+            app:layout_constraintEnd_toStartOf="@+id/longitude"
+            app:layout_constraintTop_toTopOf="@+id/longitude" />
+
+        <TextView
+            android:id="@+id/longitude"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginBottom="@dimen/common_spacing"
+            app:layout_constraintStart_toEndOf="@+id/latitude"
+            app:layout_constraintTop_toBottomOf="@id/avatar"
+            app:layout_constraintVertical_bias="1.0"
+            tools:text="55.3" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

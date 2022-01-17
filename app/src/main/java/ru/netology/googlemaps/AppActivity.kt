@@ -4,21 +4,15 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 
-
-class AppActivity : AppCompatActivity(R.layout.activity_main), OnMapReadyCallback {
-    private var fragment = MapsFragment()
+class AppActivity : AppCompatActivity(R.layout.activity_main) {
+    var fragment = MapsFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState == null) {
-            fragment = MapsFragment()
             supportFragmentManager.beginTransaction()
-                .replace(R.id.map, fragment)
+                .replace(R.id.mapa, fragment)
                 .commit()
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -26,7 +20,9 @@ class AppActivity : AppCompatActivity(R.layout.activity_main), OnMapReadyCallbac
         return true
     }
 
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        fragment.clear()
         return when (item.itemId) {
             R.id.createMarker -> {
                 fragment.addMarker()
@@ -34,6 +30,10 @@ class AppActivity : AppCompatActivity(R.layout.activity_main), OnMapReadyCallbac
             }
             R.id.editMarker -> {
                 fragment.editMarker()
+                true
+            }
+            R.id.showMarker -> {
+                fragment.showMarker()
                 true
             }
             R.id.deleteMarker -> {
@@ -47,9 +47,4 @@ class AppActivity : AppCompatActivity(R.layout.activity_main), OnMapReadyCallbac
             else -> super.onOptionsItemSelected(item)
         }
     }
-
-    override fun onMapReady(googleMap: GoogleMap){
-            println("****************** Main onMapReady")
-    }
-
 }

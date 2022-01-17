@@ -6,4 +6,8 @@
     <string name="showAllPoints">Show all markers</string>
     <string name="warning">Need permission</string>
     <string name="clickPoint">Click on marker</string>
+    <string name="title">Title</string>
+    <string name="description_marker_avatar">Marker avatar</string>
+    <string name="ltd">Ltd</string>
+    <string name="lng">Lng</string>
 </resources>
