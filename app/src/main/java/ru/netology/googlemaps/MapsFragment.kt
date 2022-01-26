@@ -13,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -44,7 +45,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     val data: LiveData<List<Marker>>
         get() = _data
 
-
     @SuppressLint("MissingPermission")
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -58,7 +58,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                 Toast.makeText(requireContext(), "Требуется разрешение", Toast.LENGTH_SHORT).show()
             }
         }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,10 +75,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         )
         binding.rwSpisok.isVisible = false
         data.observe(viewLifecycleOwner, {
-//                    map { marker -> marker}    Как иначе Collection в List перевести ?
-            adapter.submitList(it.map { marker -> marker })
+            adapter.submitList(it.toList())
         })
-
         return binding.root
     }
 
@@ -147,7 +144,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                 }
                 println("first " + this.markers.last().title)
             }
-            _data.value = collection.markers.map { it }
+            _data.value = collection.markers.toList()
         }
     }
 
@@ -178,7 +175,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     fun addMarker() {
         Toast.makeText(context, R.string.makePoint, Toast.LENGTH_SHORT).show()
         setMapLongClick(googleMap)
-        _data.value = collection.markers.map { it }
+        _data.value = collection.markers.toList()
     }
 
     fun setMapLongClick(map: GoogleMap) {
@@ -188,24 +185,52 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                     .position(latLng)
                     .title("marker${++nomMarker}")
                     .draggable(false)
-
             ).apply {
                 this.showInfoWindow()
-                _data.value = collection.markers.map { it }
+                _data.value = collection.markers.toList()
             }
         }
-
         return
     }
 
     fun editMarker() {
         Toast.makeText(context, R.string.editPoint, Toast.LENGTH_SHORT).show()
         action = "edit"
-        googleMap.setOnMarkerClickListener {
-            onMarkerClick(it)
-        }.apply {
-            _data.value = collection.markers.map { it }
+        googleMap.setOnMarkerClickListener { marker ->
+            collection.markers.forEach { if(it == marker)
+                it.setIcon(BitmapDescriptorFactory.defaultMarker(HUE_BLUE))
+            else
+                it.setIcon(BitmapDescriptorFactory.defaultMarker(HUE_RED))
+            }
+            if (!marker.isInfoWindowShown()) {
+                marker.showInfoWindow()
+            }
+            lifecycleScope.launchWhenCreated { moveToLocation(marker.position) }
+            view?.let { vw ->
+                val group = vw.findViewById<LinearLayout>(R.id.editGroup)
+                vw.findViewById<EditText>(R.id.etTitle).setText(marker.title)
+                vw.findViewById<EditText>(R.id.etTitle)
+                    .doOnTextChanged { text, start, before, count ->
+                        marker.title = text.toString()
+                        collection.markers.find { it == marker }
+                    }
+                group.isVisible = true
+                vw.findViewById<Button>(R.id.tvOK).setOnClickListener { button ->
+                    collection.remove(marker)
+                    collection.addMarker(
+                        MarkerOptions()
+                            .position(marker.position)
+                            .title(marker.title)
+                            .icon(BitmapDescriptorFactory.defaultMarker(HUE_RED))
+                    )
+                    _data.value = collection.markers.toList()
+                    group.isVisible = false
+                }
+
+            }
+            true
         }
+
     }
 
     fun showMarker() {
@@ -221,16 +246,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         action = "remove"
         googleMap.setOnMarkerClickListener { marker ->
             try {
-                marker.remove()
+                collection.remove(marker)
+                _data.value = collection.markers.toList()
                 true
             } catch (e: Exception) {
                 println("Can't delete marker $marker")
                 false
-            }
-        }.apply {
-            _data.value = collection.markers.map { it }
-            collection.markers.iterator().forEach { mk ->
-                println(mk.title)
             }
         }
     }
@@ -248,52 +269,18 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         requireView().findViewById<RecyclerView>(R.id.rwSpisok).isVisible = true
     }
 
-
     override fun onMapReady(googleMap: GoogleMap) {
         googleMap.setOnMapClickListener { latlng ->
             collection.addMarker(MarkerOptions().position(latlng))
-            _data.value = collection.markers.map { it }
+            _data.value = collection.markers.toList()
         }
     }
 
-
     override fun onMarkerClick(marker: Marker): Boolean {
         when (action) {
-
-            "edit" -> {
-                println("edit ${marker.title} clicked")
-                marker.setIcon(BitmapDescriptorFactory.defaultMarker(HUE_BLUE))
-                if (!marker.isInfoWindowShown()) {
-                    marker.showInfoWindow()
-                }
-                lifecycleScope.launchWhenCreated { moveToLocation(marker.position) }
-                view?.let { vw ->
-                    val group = vw.findViewById<LinearLayout>(R.id.editGroup)
-                    vw.findViewById<EditText>(R.id.etTitle).setText(marker.title)
-                    group.isVisible = true
-                    vw.findViewById<Button>(R.id.tvOK).setOnClickListener { button ->
-                        println("******** ${marker.title}")
-                        marker.title = vw.findViewById<EditText>(R.id.etTitle).text.toString()
-                        marker.setIcon(BitmapDescriptorFactory.defaultMarker(HUE_RED))
-                        group.isVisible = false
-                        _data.value = collection.markers.map { it }
-                    }
-                }
-            }
-
             "show" -> {
                 if (!marker.isInfoWindowShown()) {
                     marker.showInfoWindow()
-                }
-            }
-
-            "remove" -> {
-                try {
-                    _data.value = collection.markers.filter { it.id != marker.id }
-                    marker.remove()
-                } catch (e: Exception) {
-                    println("Can't delete marker $marker")
-                    false
                 }
             }
             else -> {
@@ -306,6 +293,5 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     fun clear() {
         view?.let { it.findViewById<RecyclerView>(R.id.rwSpisok).isVisible = false }
         view?.let { it.findViewById<LinearLayout>(R.id.editGroup).isVisible = false }
-
     }
 }
