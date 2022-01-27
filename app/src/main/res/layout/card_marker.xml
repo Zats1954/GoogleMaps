@@ -64,19 +64,19 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:text="@string/lng"
-            app:layout_constraintBottom_toBottomOf="@+id/longitude"
+            app:layout_constraintBottom_toBottomOf="@+id/tvLtd"
             app:layout_constraintEnd_toStartOf="@+id/longitude"
-            app:layout_constraintTop_toTopOf="@+id/longitude" />
+            app:layout_constraintTop_toTopOf="@+id/tvLtd" />
 
         <TextView
             android:id="@+id/longitude"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginBottom="@dimen/common_spacing"
+            android:layout_marginStart="36dp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvLng"
             app:layout_constraintStart_toEndOf="@+id/latitude"
             app:layout_constraintTop_toBottomOf="@id/avatar"
-            app:layout_constraintVertical_bias="1.0"
             tools:text="55.3" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
